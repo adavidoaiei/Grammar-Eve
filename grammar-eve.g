@@ -1,9 +1,5 @@
 grammar Grammar-Eve;
 
-options {
-  language=Java;
-}
-
 // Rule to define the starting point of the grammar
 assignDemo
     :   'driver' ID ':' process 'return' ';' EOF
