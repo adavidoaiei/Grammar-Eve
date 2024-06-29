@@ -1,57 +1,72 @@
 grammar Grammar-Eve;
 
-ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
+options {
+  language=Java;
+}
+
+// Rule to define the starting point of the grammar
+assignDemo
+    :   'driver' ID ':' process 'return' ';' EOF
     ;
 
-INT :	'0'..'9'+
+// Rule to define the process block
+process
+    :   'process' ':' initializationSection executionSection verificationSection
     ;
 
-FLOAT
-    :   ('0'..'9')+ '.' ('0'..'9')* EXPONENT?
-    |   '.' ('0'..'9')+ EXPONENT?
-    |   ('0'..'9')+ EXPONENT
+// Rule to define the initialization section
+initializationSection
+    :   '** initialization statements' initializationStatement* 
     ;
 
-COMMENT
-    :   '//' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
-    |   '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
+// Rule to define the execution section
+executionSection
+    :   '** execute expression' executionStatement*
     ;
 
-WS  :   ( ' '
-        | '\t'
-        | '\r'
-        | '\n'
-        ) {$channel=HIDDEN;}
+// Rule to define the verification section
+verificationSection
+    :   '** verification statements' verificationStatement*
     ;
 
-STRING
-    :  '"' ( ESC_SEQ | ~('\\'|'"') )* '"'
+// Rule to define an initialization statement
+initializationStatement
+    :   'new' ID ':=' expression ';'
     ;
 
-CHAR:  '\'' ( ESC_SEQ | ~('\''|'\\') ) '\''
+// Rule to define an execution statement
+executionStatement
+    :   'let' ID ':=' expression ';'
     ;
 
-fragment
-EXPONENT : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
-
-fragment
-HEX_DIGIT : ('0'..'9'|'a'..'f'|'A'..'F') ;
-
-fragment
-ESC_SEQ
-    :   '\\' ('b'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\')
-    |   UNICODE_ESC
-    |   OCTAL_ESC
+// Rule to define a verification statement
+verificationStatement
+    :   'expect' expression ';'
     ;
 
-fragment
-OCTAL_ESC
-    :   '\\' ('0'..'3') ('0'..'7') ('0'..'7')
-    |   '\\' ('0'..'7') ('0'..'7')
-    |   '\\' ('0'..'7')
+// Rule to define an expression
+expression
+    :   primaryExpression (operator primaryExpression)*
     ;
 
-fragment
-UNICODE_ESC
-    :   '\\' 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
+// Rule to define primary expressions (ID, INT, FLOAT, PARENTHESES)
+primaryExpression
+    :   ID
+    |   INT
+    |   FLOAT
+    |   '(' expression ')'
     ;
+
+// Rule to define operators
+operator
+    :   '=='
+    |   '+'
+    ;
+
+// Tokens for identifiers, integers, floats and comments
+ID  :   ('a'..'z' | 'A'..'Z')+ ;
+INT :   '0'..'9'+ ;
+FLOAT : '0'..'9'+ '.' '0'..'9'+ ;
+
+// Token for whitespaces (to be ignored)
+WS  :   (' ' | '\t' | '\r' | '\n')+ {skip();} ;
