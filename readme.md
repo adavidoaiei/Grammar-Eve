@@ -1,7 +1,7 @@
  
 # Grammar Eve ANTLR 3
 
-Eve language design
+Language design Eve 
 
 https://www.antlr3.org/
 
