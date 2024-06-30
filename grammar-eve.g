@@ -12,7 +12,7 @@ process
 
 // Rule to define the initialization section
 initializationSection
-    :   '** initialization statements' initializationStatement* 
+    :   '** initialization statements' initializationStatement*
     ;
 
 // Rule to define the execution section
